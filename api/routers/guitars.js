@@ -74,7 +74,7 @@ guitarsRouter.put('/:id', upload.single('image'), (req, res) => {
 guitarsRouter.post('/', upload.single('image'), (req, res) => {
   const { guitar_id, name, description } = req.body;
   const image = req.file ? req.file.filename : null;
-  const sql = `INSERT INTO guitars (guitar_id, name, description, image_name) VALUES (?, ?, ?, ?)`;
+  const sql = `INSERT INTO guitars (brand_id, name, description, image_name) VALUES (?, ?, ?, ?)`;
 
   db.query(sql, [guitar_id, name, description, image], (err, results) => {
     if (err) {

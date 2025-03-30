@@ -1,0 +1,18 @@
+.footer-bg {
+    border-top: 1px solid #000;
+    padding: 1rem 0;
+    margin-top: 4rem;
+    background-color: #5F8B4C;
+}
+
+.footer-bg p {
+    font-family: '4b pencil', monospace;
+    margin: 0;
+    color: #fff;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

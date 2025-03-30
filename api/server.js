@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors'); 
 const app = express();
 const bodyParser = require('body-parser');
-const brandRouter = require('./routers/brand');
+const brandRouter = require('./routers/brands');
 const guitarsRouter = require('./routers/guitars');
 const port = 3000;
  
@@ -18,7 +18,7 @@ app.use(express.static('public'));
 
 // Use the routers 
 app.use('/guitars', guitarsRouter);
-app.use('/brand', brandRouter);
+app.use('/brands', brandRouter);
 
 // Start the server
 app.listen(port, () => {

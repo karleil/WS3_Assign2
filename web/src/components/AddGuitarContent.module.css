@@ -1,0 +1,35 @@
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    background-color: rgb(255, 234, 211);
+    padding: 2rem;
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+}
+
+.modal__close-button {
+    font-family: 'perfect-dos', monospace;
+    font-size: 2rem;
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.modal__show-list {
+    margin-top: 16px;
+    font-size: 10px;
+}
