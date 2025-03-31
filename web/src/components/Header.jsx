@@ -6,7 +6,7 @@ function Header() {
     return (
         <header className={h['header']}>
             <div className={ `${g['container']} ${h['main-nav']}`}> 
-                <img src={logo} width={100} alt="Lofi Tapes" />
+                <img src={logo} width={100} alt="Logo" />
             </div>
         </header>
     )

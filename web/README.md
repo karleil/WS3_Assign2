@@ -1,8 +1,11 @@
-# React + Vite
+Karleil Villareal - A01397468
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+GitHub Link : https://github.com/karleil/WS3_Assign2
 
-Currently, two official plugins are available:
+Challenges:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- had a hard time referencing both tables via foreign keys resulting to filters not working.
+- couldn't make edit and delete function properly,
+
+Hi Airrick,
+I apologize for not submitting the assignment on time. I’ve been feeling burnt out from balancing multiple courses, searching for internships, and working part-time. I know I should have asked for an extension earlier, and although this is not a valid excuse, I sincerely apologize for the delay.

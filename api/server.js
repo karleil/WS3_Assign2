@@ -7,20 +7,15 @@ const brandRouter = require('./routers/brands');
 const guitarsRouter = require('./routers/guitars');
 const port = 3000;
  
-// Enable CORS
-app.use(cors());
+app.use(cors()); // enable CORS for all routes
 
-// Enable JSON body parsing
-app.use(bodyParser.json());
+app.use(bodyParser.json()); // parse JSON request bodies
 
-// Serve the 'public' folder as a static folder
-app.use(express.static('public'));
+app.use(express.static('public')); // serve static files from the 'public' directory
 
-// Use the routers 
-app.use('/guitars', guitarsRouter);
-app.use('/brands', brandRouter);
+app.use('/guitars', guitarsRouter); // router for handling routes related to guitars
+app.use('/brands', brandRouter); // router for handling routes related to brands
 
-// Start the server
-app.listen(port, () => {
+app.listen(port, () => { // starts the server
   console.log(`Example app listening on port ${port}`)
 });

@@ -4,20 +4,20 @@ import g from "../global.module.css";
 
 function ModalContent({ onClose, onTapeAdded }) {
 
-  const [dbBrands, setDbBrands] = useState(""); //
+  const [dbBrands, setDbBrands] = useState(""); // stores the brands from the database
 
-  // State to hold the brand id, title, image, and description
-  const [brand, setBrand] = useState("");
+  // stores the selected brand, tite, image, description
+  const [brand, setBrand] = useState(""); 
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
 
-  // State to hold the new brand info if that option is selected
+  // state to control if the user is adding a new brand
   const [isNewBrand, setIsNewBrand] = useState(false);
   const [newBrand, setNewBrand] = useState("");
 
-  // Load the brands from the API on initial render for the select dropdown
-  useEffect(() => {
+  
+  useEffect(() => { // fetches the list of brands from the server when the component mounts
     fetch("http://localhost:3000/brands")
       .then((res) => res.json())
       .then((data) => {
@@ -28,9 +28,9 @@ function ModalContent({ onClose, onTapeAdded }) {
       });
   }, []);
 
-  // Toggle the select and the input for brands
-  const handleBrandSelectChange = (eventTrigger) => {
-    if (eventTrigger.target.value === "-1") {
+ 
+  const handleBrandSelectChange = (eventTrigger) => {  // handles changes in the brand selection dropdown
+    if (eventTrigger.target.value === "-1") { //if 'other' is selected, enable the new brand input
       setIsNewBrand(true);
       setBrand("");
     } else {
@@ -39,26 +39,25 @@ function ModalContent({ onClose, onTapeAdded }) {
     }
   };
 
-  // Send the form data to the API
-  const handleFormSubmit = async (event) => {
+  
+  const handleFormSubmit = async (event) => { // handles form submission
 
-    // Stop the HTML form from submitting
+    
     event.preventDefault();
 
-    // Get the brand ID from the state
-    let brandId = brand;
-
-    // If the brand is new, create it before creating the tape
-    if (isNewBrand) {
-
-      const newBrandFetchMeta = {
+    
+    let brandId = brand; // if a new brand is added, this will be updated with the new brand id
+ 
+   
+    if (isNewBrand) {  // if a new brand is added, create it in the database
+      const newBrandFetchMeta = { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newBrand })
       };
 
-      // First, create the new brand by sending a POST request to the API
-      await fetch("http://localhost:3000/brands", newBrandFetchMeta)
+      
+      await fetch("http://localhost:3000/brands", newBrandFetchMeta) // this updates the brand ID with the newly added ID
         .then((response) => response.json())
         .then((data) => {
           brandId = data.brandId;
@@ -66,23 +65,22 @@ function ModalContent({ onClose, onTapeAdded }) {
 
     }
 
-    // Create FormData object to send the tape data including the image file
-    const formData = new FormData();
+    // FormData object to send the guitar details
+    const formData = new FormData(); 
     formData.append("brand_id", brandId);
     formData.append("name", title);
-    formData.append("description", description); // Add description to FormData
+    formData.append("description", description); 
     formData.append("image", image);
 
-    // Send the POST request to the API to create new tape
-    fetch("http://localhost:3000/guitars", { method: "POST", body: formData })
+    
+    fetch("http://localhost:3000/guitars", { method: "POST", body: formData }) // sends the form data to the server
       .then(response => response.json())
       .then(data => {
 
-        // Call the onTapeAdded function that was passed as a prop
-        //    @NOTE: This is passed down from AllTapes.jsx and just calls the fetchTapes function to repopulate the tapes
+
         onTapeAdded();
 
-        // Close the modal.
+        
         onClose();
 
       });

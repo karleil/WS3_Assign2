@@ -42,7 +42,6 @@ function AllGuitars() {
                 <div className={g['col-9']}>
                     <div className={`${g['flex']} ${g['space-between']} ${g['items-center']}`}>
                         <h3>Guitars</h3>
-                        {/* passes the funciton to the AddGuitar component */}
                         <AddGuitar onTapeAdded={fetchGuitars} />
                     </div>
                     <div className={g['grid-container']}>
@@ -56,8 +55,8 @@ function AllGuitars() {
                                             <h4 className={`${at['guitar-title']}`}>{guitar.name}</h4>
                                             <p>{guitar.artist}</p>
                                             <div className={`${at['guitar-actions']}`}>
-                                                <Link to={`/guitars/${guitar.id}`} className={`${g['button']} ${g['small']}`}>View</Link>
-                                                <UpdateGuitar onTapeUpdated={fetchGuitars} guitar={guitar} />
+                                                <Link to={`/guitars/${guitar.id}`} className={`${g['button']} ${g['small']}`}>View</Link> 
+                                                <UpdateGuitar onTapeUpdated={fetchGuitars} guitar={guitar} /> 
                                                 <DeleteGuitar onTapeDeleted={fetchGuitars} guitar={guitar} />
                                             </div>
                                         </div>
