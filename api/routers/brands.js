@@ -1,17 +1,17 @@
 const express = require('express');
 const db = require('../db'); 
 
-const brandRouter = express.Router();
+const brandRouter = express.Router(); // router for handling routes related to brands
 
-brandRouter.get('/', (req, res) => {
+brandRouter.get('/', (req, res) => { // route to get all brands
 
-    const sql = `SELECT * FROM brands`;
+    const sql = `SELECT * FROM brands`;  //sql query to select all data from the 'brands' table
   
-    db.query(sql, (err, results) => {
+    db.query(sql, (err, results) => { // executes the query
 
       if (err) {
         console.error(err);
-        res.status(500).send('An error occurred');
+        res.status(500).send('An error occurred'); // logs the error
       }
   
       res.json(results);
@@ -19,25 +19,25 @@ brandRouter.get('/', (req, res) => {
     });
 });
 
-// Handle POST requests to add a new brand
-brandRouter.post('/', (req, res) => {
-    // Get the new brand name from the request body
-    const { name } = req.body;
+
+brandRouter.post('/', (req, res) => { // route to add a new brand
+    
+    const { name } = req.body; // destructuring the name from the request body
   
-    // Create the SQL query to insert the new brand
-    const addBrandSQL = `INSERT INTO brands (name) VALUES (?)`;
+    
+    const addBrandSQL = `INSERT INTO brands (name) VALUES (?)`; // sql query to insert a new brand into the 'brands' table
   
-    // Execute the SQL query, but substitute the '?' with the new brand name
+    
     db.query(addBrandSQL, [name], (err, results) => {
   
-      // If an error occurred, log it and return a 500 status code
+      
       if (err) {
         console.error(err);
         return res.status(500).send('An error occurred');
       }
-      // If the query was successful, return a JSON response with the new brand ID to be used later
+      
       res.json({ message: 'Brand added successfully', brandId: results.insertId });
     });
 });
 
-module.exports = brandRouter;
+module.exports = brandRouter; // exports the the router to be used in other files

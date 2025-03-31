@@ -8,25 +8,25 @@ import g from '../global.module.css';
 import at from './AllGuitars.module.css';
 
 
-function AllTapes() {
+function AllGuitars() {
 
-    const [tapes, setTapes] = useState([]);
+    const [guitars, setGuitars] = useState([]); // stores the list of guitars fetched from the server
 
-    // We have moved the fetchTapes to a funciton, because we want to call it both when the component mounts and when a new tape is added
-    const fetchTapes = async () => {
+    
+    const fetchGuitars = async () => {  // fetches the list of guitars from the server
         fetch('http://localhost:3000/guitars/')
-            .then(response => response.json())
-            .then(data => setTapes(data));
+            .then(response => response.json()) // parses the response as JSON
+            .then(data => setGuitars(data)); // updates the state with the fetched guitars
     }
 
-    const handleUpdatedTapes = (tapesArray) => {
-        setTapes(tapesArray);
+    const handleUpdatedGuitars = (guitarsArray) => { // updates the list of guitars when filters are applied
+        setGuitars(guitarsArray);
     }
 
-    // When the component is displayed, fetch the tapes
-    useEffect(() => {
+    
+    useEffect(() => { // fetches the list of guitars from the server when the component mounts
 
-        fetchTapes();
+        fetchGuitars();
 
     }, []);
 
@@ -35,29 +35,30 @@ function AllTapes() {
         <main className={g['container']}>
             <div className={g['grid-container']}>
                 <div className={g['col-3']}>
+                        {/* pass the function to the GuitarFilters component */}
                         <h3>Filters</h3>
-                        <GuitarFilters updateTapes={handleUpdatedTapes} />
+                        <GuitarFilters updateGuitars={handleUpdatedGuitars} /> 
                 </div>
                 <div className={g['col-9']}>
                     <div className={`${g['flex']} ${g['space-between']} ${g['items-center']}`}>
                         <h3>Guitars</h3>
-                        {/* Pass the funciton to the AddGuitar component down to the child */}
-                        <AddGuitar onTapeAdded={fetchTapes} />
+                        {/* passes the funciton to the AddGuitar component */}
+                        <AddGuitar onTapeAdded={fetchGuitars} />
                     </div>
                     <div className={g['grid-container']}>
 
-                        {tapes.map( tape => {
+                        {guitars.map( guitar => { // maps through the list of guitars and renders each one
                             return (
-                                <div key={tape.id}  className={`${g['col-4']} ${g['flex']} ${g['flex-grow']}`}>
+                                <div key={guitar.id}  className={`${g['col-4']} ${g['flex']} ${g['flex-grow']}`}>
                                     <div className={`${g['card']}`}>
-                                        <img src={`http://localhost:3000/images/${tape.image_name}`} alt="Placeholder" />
+                                        <img src={`http://localhost:3000/images/${guitar.image_name}`} alt="Placeholder" />
                                         <div className={g['card-content']}>
-                                            <h4 className={`${at['tape-title']}`}>{tape.name}</h4>
-                                            <p>{tape.artist}</p>
-                                            <div className={`${at['tape-actions']}`}>
-                                                <Link to={`/guitars/${tape.id}`} className={`${g['button']} ${g['small']}`}>View</Link>
-                                                <UpdateGuitar onTapeUpdated={fetchTapes} tape={tape} />
-                                                <DeleteGuitar onTapeDeleted={fetchTapes} tape={tape} />
+                                            <h4 className={`${at['guitar-title']}`}>{guitar.name}</h4>
+                                            <p>{guitar.artist}</p>
+                                            <div className={`${at['guitar-actions']}`}>
+                                                <Link to={`/guitars/${guitar.id}`} className={`${g['button']} ${g['small']}`}>View</Link>
+                                                <UpdateGuitar onTapeUpdated={fetchGuitars} guitar={guitar} />
+                                                <DeleteGuitar onTapeDeleted={fetchGuitars} guitar={guitar} />
                                             </div>
                                         </div>
                                     </div>
@@ -72,4 +73,4 @@ function AllTapes() {
     )
 }
 
-export default AllTapes;
+export default AllGuitars;

@@ -116,7 +116,7 @@ img {
 .button.delete:hover { background-color: rgb(255, 23, 23); color: #fff; }
 .button.warning { background-color: rgb(66, 128, 170); color: #fff; }
 .button.warning:hover { background-color: rgb(35, 85, 119); color: #fff; }
-.button.success { background-color: #0f0; color: #000; }
+.button.success { background-color: rgb(96, 133, 96); color: #fff; }
 
 /* Card */
 

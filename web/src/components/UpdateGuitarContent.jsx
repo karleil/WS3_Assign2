@@ -2,150 +2,148 @@ import React, { useState, useEffect } from "react";
 import m from "./AddGuitarContent.module.css";
 import g from "../global.module.css";
 
-function UpdateModalContent({ onClose, onTapeUpdated, tape }) {
+function UpdateGuitarContent({ onClose, onGuitarUpdated, guitar }) {
 
-  // Used to store the artists from the API
-  const [dbArtists, setDbArtists] = useState([]);
+  
+  const [dbBrands, setDbBrands] = useState([]);  // stores the brands from the database
 
-  // Used to store the artist id, initializing it with an empty string if it's not provided
-  const [artist, setArtist] = useState(tape.artist_id || "");
+  
+  const [brand, setBrand] = useState(guitar.brand_id || ""); // stores the selected brand defaulting to the brand of the guitar being edited
 
-  // Used to store the title, image and new artist name from the form
-  const [title, setTitle] = useState(tape.title || "");
+  
+  const [title, setTitle] = useState(guitar.title || "");
   const [image, setImage] = useState("");
-  const [isNewArtist, setIsNewArtist] = useState(false);
-  const [newArtist, setNewArtist] = useState("");
+  const [isNewBrand, setIsNewBrand] = useState(false);
+  const [newBrand, setNewBrand] = useState("");
 
-  // Load the artists from the API
+  
   useEffect(() => {
-    fetch("http://localhost:3000/brands")
-      .then((res) => res.json())
+    fetch("http://localhost:3000/brands") // fetches the list of brands from the server when the component mounts
+      .then((res) => res.json()) // parses the response as JSON
       .then((data) => {
-        setDbArtists(data);
-        // If there are artists in the database and the tape has no artist, set the first artist as the default
-        if (data.length > 0 && !artist) {
-          setArtist(data[0].id); // Ensure artist state is populated
+        setDbBrands(data);
+        
+        if (data.length > 0 && !brand) {  
+          setBrand(data[0].id); 
         }
       });
-  }, [artist]);
+  }, [brand]);
 
-  // This runs when the artist select changes, if the user selects the option to add a new artist, show the input field instead of the select
-  const handleArtistSelectChange = (eventTrigger) => {
-    if (eventTrigger.target.value === "-1") {
-      setIsNewArtist(true);
-      setArtist("");
+   
+  const handleBrandSelectChange = (eventTrigger) => { // handles changes in the brand selection dropdown
+    if (eventTrigger.target.value === "-1") { // if 'other' is selected, enable the new brand input
+      setIsNewBrand(true);
+      setBrand("");
     } else {
-      setIsNewArtist(false);
-      setArtist(eventTrigger.target.value);
+      setIsNewBrand(false);
+      setBrand(eventTrigger.target.value);
     }
   };
 
-  // Send the form data to the API when the form is submitted
-  const handleFormSubmit = async (event) => {
+ 
+  const handleFormSubmit = async (event) => { 
     event.preventDefault();
 
-    // Ensure the artist is selected or a new artist is provided
-    if (!artist && !isNewArtist) {
-      alert("Please select an artist or add a new one.");
+    
+    if (!brand && !isNewBrand) { // if no brand is selected and not adding a new one
+      alert("Please select a brand or add a new one.");
       return;
     }
 
-    // Ensure the title is not empty
-    if (!title) {
+    
+    if (!title) { // if title is empty
       alert("Title cannot be empty.");
       return;
     }
 
-    // If the artist is new, create it before creating the tape
-    let artistId = artist;
-    if (isNewArtist) {
-      // Check if new artist name is not empty
-      if (!newArtist) {
-        alert("Please provide a name for the new artist.");
+   
+    let brandId = brand; // if a new brand is added, this will be updated with the new brand id
+    if (isNewBrand) {
+      
+      if (!newBrand) {  // if new brand name is empty 
+        alert("Please provide a name for the new brand.");
         return;
       }
 
-      // First, create the new artist by sending a POST request to the API
-      const artistResponse = await fetch("http://localhost:3000/brands", {
+      // creates a new brand in the database
+      const brandResponse = await fetch("http://localhost:3000/brands", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ new_artist: newArtist }),
+        body: JSON.stringify({ new_brand: newBrand }),
       });
 
-      // Check if the artist creation was successful
-      if (!artistResponse.ok) {
-        alert("Failed to create a new artist.");
+      
+      if (!brandResponse.ok) { // returns a respons if the brand creation fails 
+        alert("Failed to create a new brand.");
         return;
       }
 
-      // Get the new artist ID from the response
-      const artistData = await artistResponse.json();
-      artistId = artistData.artistId;
+     
+      const brandData = await brandResponse.json(); // parses the response as JSON
+      brandId = brandData.brandId; // updates the brand ID with the newly added ID
     }
 
-    // Ensure an image is provided if required by the backend
+   
     if (!image) {
       alert("Please upload an image.");
       return;
     }
 
-    // Create FormData object to send the tape data including the image file.
-    const formData = new FormData();
-    formData.append("brand_id", artistId);
+  
+    const formData = new FormData(); //creates a FormData object to send the guitar details
+    formData.append("brand_id", brandId);
     formData.append("title", title);
     formData.append("image", image);
 
-    // Send the PUT request to the API to update the tape
-    const tapeResponse = await fetch(`http://localhost:3000/guitars/${tape.id}`, {
+    
+    const guitarResponse = await fetch(`http://localhost:3000/guitars/${guitar.id}`, { // sends the form data to the server
       method: "PUT",
       body: formData,
     });
 
-    // Check if the response is successful
-    if (!tapeResponse.ok) {
-      alert("Failed to update the tape.");
+ 
+    if (!guitarResponse.ok) {
+      alert("Failed to update the item.");
       return;
     }
 
-    // Get the response from the API
-    const tapeResult = await tapeResponse.json();
-    console.log("Success:", tapeResult);
+ 
+    const guitarResult = await guitarResponse.json();
+    console.log("Success:", guitarResult);
 
-    // Call the onTapeUpdated function that was passed as a prop to refresh the list of tapes
-    onTapeUpdated();
-
-    // Close the modal
-    onClose();
+    onGuitarUpdated(); // calls the onGuitarUpdated function to refresh the list of guitars
+    onClose(); // closes the modal
   };
 
   return (
     <div className={m['modal-container']}>
       <div className={`${m['modal']} ${g['card']}`}>
-        <h3>Edit Tape</h3>
+        {/* the foorm to edit the guitar */}
+        <h3>Edit Guitar</h3>
         <form action="" className={`${g['form-group']} ${g['grid-container']}`} onSubmit={handleFormSubmit} encType="multipart/form-data">
           <div className={g['col-4']}>
-            <label htmlFor="artist">Artist</label>
-            {!isNewArtist ? (
+            <label htmlFor="brand">Brand</label>
+            {!isNewBrand ? (
               <select
-                name="artist"
-                id="artist"
-                value={artist} // ensure value is always controlled
-                onChange={handleArtistSelectChange}>
-                {dbArtists && dbArtists.map((artist, index) => (
-                  <option key={artist.id} value={artist.id}>{artist.name}</option>
+                name="brand"
+                id="brand"
+                value={brand} 
+                onChange={handleBrandSelectChange}> {/* renders the brands */}
+                {dbBrands && dbBrands.map((brand, index) => (
+                  <option key={brand.id} value={brand.id}>{brand.name}</option>
                 ))}
-                <option value="-1">+ New Artist + </option>
+                <option value="-1">Other </option>
               </select>
             ) : (
               <>
                 <input
                   type="text"
-                  name="artist"
-                  id="artist"
-                  value={newArtist} // always controlled
-                  onChange={(e) => setNewArtist(e.target.value)}
+                  name="brand"
+                  id="brand"
+                  value={newBrand} 
+                  onChange={(e) => setNewBrand(e.target.value)} 
                 />
-                <button className={`${g['button']} ${m['modal__show-list']}`} onClick={() => setIsNewArtist(false)}>Show List</button>
+                <button className={`${g['button']} ${m['modal__show-list']}`} onClick={() => setIsNewBrand(false)}>Show List</button> 
               </>
             )}
           </div>
@@ -155,11 +153,11 @@ function UpdateModalContent({ onClose, onTapeUpdated, tape }) {
               type="text"
               name="title"
               id="title"
-              value={title} // ensure value is always controlled
+              value={title} 
               onChange={(e) => setTitle(e.target.value)}
             />
             <label>Current Image</label>
-            <img src={`http://localhost:3000/images/${tape.image_name}`} alt="Placeholder" />
+            <img src={`http://localhost:3000/images/${guitar.image_name}`} alt="Placeholder" />
             <label htmlFor="image">Upload New Image</label>
             <input type="file"
               name="image"
@@ -176,4 +174,4 @@ function UpdateModalContent({ onClose, onTapeUpdated, tape }) {
   );
 }
 
-export default UpdateModalContent;
+export default UpdateGuitarContent;

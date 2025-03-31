@@ -4,20 +4,19 @@ import g from "../global.module.css";
 
 function ModalContent({ onClose, onTapeAdded }) {
 
-  // State to hold the artists from the API
-  const [dbBrands, setDbBrands] = useState("");
+  const [dbBrands, setDbBrands] = useState(""); //
 
-  // State to hold the artist id, title, image, and description
-  const [artist, setBrand] = useState("");
+  // State to hold the brand id, title, image, and description
+  const [brand, setBrand] = useState("");
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
 
-  // State to hold the new artist info if that option is selected
+  // State to hold the new brand info if that option is selected
   const [isNewBrand, setIsNewBrand] = useState(false);
   const [newBrand, setNewBrand] = useState("");
 
-  // Load the artists from the API on initial render for the select dropdown
+  // Load the brands from the API on initial render for the select dropdown
   useEffect(() => {
     fetch("http://localhost:3000/brands")
       .then((res) => res.json())
@@ -29,7 +28,7 @@ function ModalContent({ onClose, onTapeAdded }) {
       });
   }, []);
 
-  // Toggle the select and the input for artists
+  // Toggle the select and the input for brands
   const handleBrandSelectChange = (eventTrigger) => {
     if (eventTrigger.target.value === "-1") {
       setIsNewBrand(true);
@@ -46,10 +45,10 @@ function ModalContent({ onClose, onTapeAdded }) {
     // Stop the HTML form from submitting
     event.preventDefault();
 
-    // Get the artist ID from the state
-    let artistId = artist;
+    // Get the brand ID from the state
+    let brandId = brand;
 
-    // If the artist is new, create it before creating the tape
+    // If the brand is new, create it before creating the tape
     if (isNewBrand) {
 
       const newBrandFetchMeta = {
@@ -58,18 +57,18 @@ function ModalContent({ onClose, onTapeAdded }) {
         body: JSON.stringify({ name: newBrand })
       };
 
-      // First, create the new artist by sending a POST request to the API
+      // First, create the new brand by sending a POST request to the API
       await fetch("http://localhost:3000/brands", newBrandFetchMeta)
         .then((response) => response.json())
         .then((data) => {
-          artistId = data.artistId;
+          brandId = data.brandId;
         });
 
     }
 
     // Create FormData object to send the tape data including the image file
     const formData = new FormData();
-    formData.append("brand_id", artistId);
+    formData.append("brand_id", brandId);
     formData.append("name", title);
     formData.append("description", description); // Add description to FormData
     formData.append("image", image);
@@ -96,15 +95,15 @@ function ModalContent({ onClose, onTapeAdded }) {
         <h3>Add new guitar</h3>
         <form action="" className={`${g['form-group']} ${g['grid-container']}`} onSubmit={handleFormSubmit} encType="multipart/form-data">
           <div className={g['col-6']}>
-            <label htmlFor="artist">Brand</label>
+            <label htmlFor="brand">Brand</label>
             {!isNewBrand ? (
               <select
-                name="artist"
-                id="artist"
-                value={artist}
+                name="brand"
+                id="brand"
+                value={brand}
                 onChange={handleBrandSelectChange}>
-                {dbBrands && dbBrands.map((artist, index) => (
-                  <option key={artist.id} value={artist.id}>{artist.name}</option>
+                {dbBrands && dbBrands.map((brand, index) => (
+                  <option key={brand.id} value={brand.id}>{brand.name}</option>
                 ))}
                 <option value="-1">Other </option>
               </select>
@@ -112,8 +111,8 @@ function ModalContent({ onClose, onTapeAdded }) {
               <>
                 <input
                   type="text"
-                  name="artist"
-                  id="artist"
+                  name="brand"
+                  id="brand"
                   value={newBrand}
                   onChange={(e) => setNewBrand(e.target.value)}
                 />
