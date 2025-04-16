@@ -11,7 +11,7 @@ function UpdateGuitarContent({ onClose, onGuitarUpdated, guitar }) {
   const [brand, setBrand] = useState(guitar.brand_id || ""); // stores the selected brand defaulting to the brand of the guitar being edited
 
   
-  const [title, setTitle] = useState(guitar.title || "");
+  const [name, setTitle] = useState(guitar.name || "");
   const [image, setImage] = useState("");
   const [isNewBrand, setIsNewBrand] = useState(false);
   const [newBrand, setNewBrand] = useState("");
@@ -51,7 +51,7 @@ function UpdateGuitarContent({ onClose, onGuitarUpdated, guitar }) {
     }
 
     
-    if (!title) { // if title is empty
+    if (!name) { // if name is empty
       alert("Title cannot be empty.");
       return;
     }
@@ -92,7 +92,7 @@ function UpdateGuitarContent({ onClose, onGuitarUpdated, guitar }) {
   
     const formData = new FormData(); //creates a FormData object to send the guitar details
     formData.append("brand_id", brandId);
-    formData.append("title", title);
+    formData.append("name", name);
     formData.append("image", image);
 
     
@@ -148,12 +148,12 @@ function UpdateGuitarContent({ onClose, onGuitarUpdated, guitar }) {
             )}
           </div>
           <div className={g['col-8']}>
-            <label htmlFor="title">Title</label>
+            <label htmlFor="name">Title</label>
             <input
               type="text"
-              name="title"
-              id="title"
-              value={title} 
+              name="name"
+              id="name"
+              value={name} 
               onChange={(e) => setTitle(e.target.value)}
             />
             <label>Current Image</label>

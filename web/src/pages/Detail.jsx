@@ -13,7 +13,11 @@ function Detail() {
 
     useEffect(() => { // fetches the guitar data from the server when the component mounts
 
-        fetch(`http://localhost:3000/guitars/${id}`) // fetches the guitar data from the server using the id from the URL
+        fetch(`http://localhost:3000/guitars/${id}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("jwt-token")}` // sends the JWT token for authentication
+            }
+        }) // fetches the guitar data from the server using the id from the URL
             .then(response => response.json()) // parses the response as JSON
             .then(data => {
                 setGuitarData(data);

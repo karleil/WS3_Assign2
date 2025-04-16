@@ -2,35 +2,43 @@ import React, { useState, useEffect } from "react";
 import m from "./AddGuitarContent.module.css";
 import g from "../global.module.css";
 
-function ModalContent({ onClose, onTapeAdded }) {
+function ModalContent({ onClose, onGuitarAdded }) {
 
-  const [dbBrands, setDbBrands] = useState(""); // stores the brands from the database
+  // State to hold the brands from the API
+  const [dbBrands, setDbBrands] = useState("");
 
-  // stores the selected brand, tite, image, description
-  const [brand, setBrand] = useState(""); 
-  const [title, setTitle] = useState("");
-  const [image, setImage] = useState("");
+  // State to hold the brand id, name, image, description
+  const [brand, setBrand] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
 
-  // state to control if the user is adding a new brand
+  // State to hold the new brand info if that option is selected
   const [isNewBrand, setIsNewBrand] = useState(false);
   const [newBrand, setNewBrand] = useState("");
 
-  
-  useEffect(() => { // fetches the list of brands from the server when the component mounts
-    fetch("http://localhost:3000/brands")
+  // Load the brands from the API on initial render
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    fetch("http://localhost:3000/brands", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setDbBrands(data);
         if (data.length > 0) {
           setBrand(data[0].id);
         }
-      });
+      })
+      .catch((err) => console.log(err));
   }, []);
 
- 
-  const handleBrandSelectChange = (eventTrigger) => {  // handles changes in the brand selection dropdown
-    if (eventTrigger.target.value === "-1") { //if 'other' is selected, enable the new brand input
+  // Toggle between select and input for brands
+  const handleBrandSelectChange = (eventTrigger) => {
+    if (eventTrigger.target.value === "-1") {
       setIsNewBrand(true);
       setBrand("");
     } else {
@@ -39,59 +47,63 @@ function ModalContent({ onClose, onTapeAdded }) {
     }
   };
 
-  
-  const handleFormSubmit = async (event) => { // handles form submission
-
-    
+  // Send form data to the API
+  const handleFormSubmit = (event) => {
     event.preventDefault();
 
-    
-    let brandId = brand; // if a new brand is added, this will be updated with the new brand id
- 
-   
-    if (isNewBrand) {  // if a new brand is added, create it in the database
-      const newBrandFetchMeta = { 
+    let brandId = brand;
+
+    // Create new brand first if needed
+    if (isNewBrand) {
+      const newBrandFetchMeta = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newBrand })
+        body: JSON.stringify({ name: newBrand }),
       };
 
-      
-      await fetch("http://localhost:3000/brands", newBrandFetchMeta) // this updates the brand ID with the newly added ID
+      return fetch("http://localhost:3000/brands", newBrandFetchMeta)
         .then((response) => response.json())
         .then((data) => {
           brandId = data.brandId;
+
+          return submitGuitar(brandId);
         });
-
+    } else {
+      submitGuitar(brandId);
     }
+  };
 
-    // FormData object to send the guitar details
-    const formData = new FormData(); 
+  // Submit the guitar info (after brand is determined)
+  const submitGuitar = (brandId) => {
+    const formData = new FormData();
     formData.append("brand_id", brandId);
-    formData.append("name", title);
-    formData.append("description", description); 
+    formData.append("name", name);
+    formData.append("description", description);
     formData.append("image", image);
 
-    
-    fetch("http://localhost:3000/guitars", { method: "POST", body: formData }) // sends the form data to the server
-      .then(response => response.json())
-      .then(data => {
-
-
-        onTapeAdded();
-
-        
+    fetch("http://localhost:3000/guitars", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("jwt-token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then(() => {
+        onGuitarAdded();
         onClose();
-
       });
-
   };
 
   return (
     <div className={m['modal-container']}>
       <div className={`${m['modal']} ${g['card']}`}>
-        <h3>Add new guitar</h3>
-        <form action="" className={`${g['form-group']} ${g['grid-container']}`} onSubmit={handleFormSubmit} encType="multipart/form-data">
+        <h3>Add a new guitar</h3>
+        <form
+          className={`${g['form-group']} ${g['grid-container']}`}
+          onSubmit={handleFormSubmit}
+          encType="multipart/form-data"
+        >
           <div className={g['col-6']}>
             <label htmlFor="brand">Brand</label>
             {!isNewBrand ? (
@@ -99,11 +111,12 @@ function ModalContent({ onClose, onTapeAdded }) {
                 name="brand"
                 id="brand"
                 value={brand}
-                onChange={handleBrandSelectChange}>
-                {dbBrands && dbBrands.map((brand, index) => (
-                  <option key={brand.id} value={brand.id}>{brand.name}</option>
+                onChange={handleBrandSelectChange}
+              >
+                {dbBrands && dbBrands.map((b, index) => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
                 ))}
-                <option value="-1">Other </option>
+                <option value="-1">+ New Brand +</option>
               </select>
             ) : (
               <>
@@ -114,7 +127,13 @@ function ModalContent({ onClose, onTapeAdded }) {
                   value={newBrand}
                   onChange={(e) => setNewBrand(e.target.value)}
                 />
-                <button className={`${g['button']} ${m['modal__show-list']}`} onClick={() => setIsNewBrand(false)}>Show List</button>
+                <button
+                  className={`${g['button']} ${m['modal__show-list']}`}
+                  type="button"
+                  onClick={() => setIsNewBrand(false)}
+                >
+                  Show List
+                </button>
               </>
             )}
           </div>
@@ -124,13 +143,12 @@ function ModalContent({ onClose, onTapeAdded }) {
               type="text"
               name="title"
               id="title"
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
-            <label htmlFor="description">Description</label>
+            <label>Description</label>
             <textarea
               name="description"
               id="description"
-              rows="4"
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
             <label htmlFor="image">Image</label>
@@ -142,7 +160,7 @@ function ModalContent({ onClose, onTapeAdded }) {
             />
           </div>
           <div className={g['col-12']}>
-            <button className={g['button']} type="submit">Add tape</button>
+            <button className={g['button']} type="submit">Add guitar</button>
           </div>
         </form>
         <button onClick={onClose} className={m["modal__close-button"]}>x</button>
