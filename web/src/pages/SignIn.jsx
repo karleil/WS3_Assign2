@@ -4,22 +4,23 @@ import { useNavigate } from "react-router";
 
 export default function SignIn( handleLogin ) {
 
-    const [loginSuccess, setLoginSuccess] = useState(false); //tracks if login was successful
-    const [formData, setFormData] = useState({ //tracks email and password
+    const [loginSuccess, setLoginSuccess] = useState(false); // state to track if login was successful
+    const [formData, setFormData] = useState({ //statew to tracks email and password
         email: "",
         password: "",
     });
 
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // hook from react-router to navigate to different routes
 
-    useEffect(() => {
+    useEffect(() => { //this effect runs when loginSuccess changes
+        // If login is successful, navigate to the guitars page
         if(loginSuccess) { navigate("/guitars") }
     }, [loginSuccess]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        fetch("http://localhost:3000/users/sign-in", {
+        fetch("http://localhost:3000/users/sign-in", { // this fetches the sign-in endpoint from the server
             method: "POST", 
             headers: {
                 "Content-Type": "application/json"
@@ -28,9 +29,9 @@ export default function SignIn( handleLogin ) {
         })
         .then( response => response.json() )
         .then( returnedData => {
-            localStorage.setItem( "jwt-token", returnedData.jwt);
+            localStorage.setItem( "jwt-token", returnedData.jwt); // stores the JWT token in local storage for authentication
             setLoginSuccess(true);
-            handleLogin(); // Call the handleLogin function passed as a prop
+            handleLogin(); // calls the handleLogin function passed as a prop to update the login state in the parent component
         });
         
     };

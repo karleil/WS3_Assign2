@@ -4,26 +4,26 @@ import g from "../global.module.css";
 
 function ModalContent({ onClose, onGuitarAdded }) {
 
-  // State to hold the brands from the API
+  
   const [dbBrands, setDbBrands] = useState("");
 
-  // State to hold the brand id, name, image, description
+
   const [brand, setBrand] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
 
-  // State to hold the new brand info if that option is selected
+ 
   const [isNewBrand, setIsNewBrand] = useState(false);
   const [newBrand, setNewBrand] = useState("");
 
-  // Load the brands from the API on initial render
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     fetch("http://localhost:3000/brands", {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, //auth token of the user, used to authenticate the user and give them access to the database
       },
     })
       .then((res) => res.json())
@@ -36,7 +36,7 @@ function ModalContent({ onClose, onGuitarAdded }) {
       .catch((err) => console.log(err));
   }, []);
 
-  // Toggle between select and input for brands
+  
   const handleBrandSelectChange = (eventTrigger) => {
     if (eventTrigger.target.value === "-1") {
       setIsNewBrand(true);
@@ -47,13 +47,13 @@ function ModalContent({ onClose, onGuitarAdded }) {
     }
   };
 
-  // Send form data to the API
+  
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
     let brandId = brand;
 
-    // Create new brand first if needed
+    
     if (isNewBrand) {
       const newBrandFetchMeta = {
         method: "POST",
@@ -73,7 +73,7 @@ function ModalContent({ onClose, onGuitarAdded }) {
     }
   };
 
-  // Submit the guitar info (after brand is determined)
+  
   const submitGuitar = (brandId) => {
     const formData = new FormData();
     formData.append("brand_id", brandId);
@@ -85,7 +85,7 @@ function ModalContent({ onClose, onGuitarAdded }) {
       method: "POST",
       body: formData,
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("jwt-token")}`,
+        Authorization: `Bearer ${localStorage.getItem("jwt-token")}`, //auth token of the user, used to authenticate the user and give them access to the database
       },
     })
       .then((response) => response.json())

@@ -2,24 +2,24 @@ import { Link } from "react-router";
 import { useState } from "react";
 
 export default function SignUp() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({ // state to track the form data
         email: "",
         password: "",
         confirmPassword: "",
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e) => { //this function adds a new user to the database
         e.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+            alert("Passwords do not match!"); 
             return;
         }
 
-        fetch("http://localhost:3000/users/", {
+        fetch("http://localhost:3000/users/", { // this fetches the sign-up endpoint from the server
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json" // sets the content type to JSON
             },
             body: JSON.stringify(formData)
         })
@@ -36,7 +36,6 @@ export default function SignUp() {
                 <h1 className="text-6xl text-orange-600 font-bold mb-6 text-center">Sign Up</h1>
                 <p className="text-gray-600 text-center mb-8">Create an account to start your wishlist!</p>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Email Field */}
                     <div>
                         <label htmlFor="email" className="block text-left text-gray-700 font-medium mb-2">
                             Email
@@ -49,11 +48,10 @@ export default function SignUp() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                             required
                             onChange={ (event) => {
-                                setFormData({ ...formData, email: event.target.value })
+                                setFormData({ ...formData, email: event.target.value }) // this updates the email field in the formData state
                             }}
                         />
                     </div>
-                    {/* Password Field */}
                     <div>
                         <label htmlFor="password" className="block text-left text-gray-700 font-medium mb-2">
                             Password
@@ -66,11 +64,10 @@ export default function SignUp() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                             required
                             onChange={ (event) => {
-                                setFormData({ ...formData, password: event.target.value })
+                                setFormData({ ...formData, password: event.target.value }) // this updates the password field in the formData state
                             }}
                         />
                     </div>
-                    {/* Confirm Password Field */}
                     <div>
                         <label htmlFor="confirmPassword" className="block text-left text-gray-700 font-medium mb-2">
                             Confirm Password
@@ -83,11 +80,10 @@ export default function SignUp() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                             required
                             onChange={ (event) => {
-                                setFormData({ ...formData, confirmPassword: event.target.value })
+                                setFormData({ ...formData, confirmPassword: event.target.value }) // this updates the confirm password field in the formData state
                             }}
                         />
                     </div>
-                    {/* Submit Button */}
                     <div>
                         <button
                             type="submit"

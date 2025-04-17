@@ -69,7 +69,7 @@ function UpdateGuitarContent({ onClose, onGuitarUpdated, guitar }) {
       const brandResponse = await fetch("http://localhost:3000/brands", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ new_brand: newBrand }),
+        body: JSON.stringify({ new_brand: newBrand }), 
       });
 
       

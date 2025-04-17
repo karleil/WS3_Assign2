@@ -15,7 +15,7 @@ function Detail() {
 
         fetch(`http://localhost:3000/guitars/${id}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("jwt-token")}` // sends the JWT token for authentication
+                Authorization: `Bearer ${localStorage.getItem("jwt-token")}` // auth token of the user, used to authenticate the user and give them access to the database
             }
         }) // fetches the guitar data from the server using the id from the URL
             .then(response => response.json()) // parses the response as JSON

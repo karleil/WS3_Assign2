@@ -1,88 +1,79 @@
-// Import the .env file variables
+// imports the .env file
 require('dotenv').config();
-
 const express = require('express');
 const db = require('../db');
 const upload = require('../storage');
-// Import the authentication file
 const authenticateToken = require("../auth.jwt");
 
 const guitarsRouter = express.Router();
 
-// Use the auth protection on all routers
-guitarsRouter.use(authenticateToken);
+guitarsRouter.use(authenticateToken); // this will run the authenticateToken function on every route in this file
 
-// Get all guitars from the database
-guitarsRouter.get('/', (req, res) => {
+guitarsRouter.get('/', (req, res) => { // Gets all the guitar from the database
 
-  // Pull the brand from the query Example: /guitars?brands=1
-  const brands = req.query.brands;
+  const brands = req.query.brands; // this pulls the brands from the query string
 
-  // user property is attached in "../auth.jwt.js"
-  const user_id = req.user.userId;
+  const user_id = req.user.userId; // this pulls the user id from the auth function
 
-  // This is the basic query using a JOIN for a guitar
   let sql = `
     SELECT guitars.*, brands.name AS brand, brands.id AS brand_id
     FROM guitars
     JOIN brands ON guitars.brand_id = brands.id WHERE `;
 
-  // Here we are using a queryParam array because we conditionally push to it depending on if there is the brand param or not
-  const queryParams = [];
+  const queryParams = []; // this is an array that will hold the query parameters depending on the query string
 
-  // Check if the query param exists
+  // this checks if there is a brand in the query string
   if (brands) {
 
-    // If it does, pass it in here
+    // if there is, pass it in here
     sql += `brands.id IN (?) AND `;
 
-    // If it's an array, add each as an item to query params
+    // if its an array, add each brand to the array
     if (Array.isArray(brands)) {
       queryParams.push(...brands);
 
-    // If it's just a number, just add it to the array
+    // if its a number, addd to the array
     } else {
       queryParams.push(brands);
     }
   }
 
-  // Add the logged-in user to the SQL query
+  // this adds the user id to the query
   sql += `guitars.user_id = ?`;
 
-  // Push the value onto the end
+  // this adds the user id to the array
   queryParams.push(user_id);
 
-  // Run the SQL above, subbing the parameters
+  //this runs the query above
   db.query(sql, queryParams, (err, results) => {
 
-    // If there is an error, log it
+    // logs an error if there is one
     if (err) {
       console.error(err);
       res.status(500).send('An error occurred');
     }
 
-    // Send the results back
+    // sends the results back to the client
     res.json(results);
   });
 });
 
-// Get a single guitar from the database
+// this route gets a single guitar from the database
 guitarsRouter.get('/:id', (req, res) => {
 
-  // Get the id from the URL
   const { id } = req.params;
 
-  // Get the user that was attached in the auth function
+  // this pulls the user id from the auth function
   const user_id = req.user.userId;
 
-  // SQL for one guitar
+  // sql for one guitar
   const sql = `
     SELECT guitars.*, brands.name AS brand, brands.id AS brand_id
     FROM guitars
     JOIN brands ON guitars.brand_id = brands.id
     WHERE guitars.id = ? AND guitars.user_id = ?`;
 
-  // Substitute the '?' with the id from the URL to prevent SQL injection
+  // this substitutes the ? with the id and user id
   db.query(sql, [id, user_id], (err, results) => {
 
     if (err) {
@@ -94,42 +85,38 @@ guitarsRouter.get('/:id', (req, res) => {
   });
 });
 
-// Delete a guitar from the database
+// delete a guitar from the database
 guitarsRouter.delete("/:id", (req, res) => {
 
-  // Get the id from the URL placeholder here
   const { id } = req.params;
 
-  // Get the user_id from the auth function
+  // this pulls the user id from the auth function
   const user_id = req.user.userId;
 
-  // SQL Query to delete the guitar
+  // query to delete the guitar
   const sql = `DELETE FROM guitars WHERE id = ? AND user_id = ? LIMIT 1`;
 
-  // Run the above 
+  // same as above
   db.query(sql, [id, user_id], (err, results) => {
 
     if (err) {
       console.log(err);
       res.status(500).send("Internal Server Error");
     }
-
-    // Send the response back to redirect
     res.json({ message: "Guitar Deleted" });
   });
 });
 
-// Update a guitar entry in the database
+// updates a guitar in the database
 guitarsRouter.put('/:id', upload.single('image'), (req, res) => {
 
-  // Get the id from the URL
+  // this pulls the id from the request params
   const { id } = req.params;
   const user_id = req.user.userId;
 
-  // Get the name and brand ID from the request body
+  // this pulls the name, description, and brand id from the request body
   const { name, description, brand_id } = req.body;
 
-  // @NOTE: We are breaking the SQL query into multiple concatenated strings for readability to only add the image_name if a file was uploaded
 
   let updateGuitarSQL = `
     UPDATE guitars
@@ -138,20 +125,20 @@ guitarsRouter.put('/:id', upload.single('image'), (req, res) => {
 
   const queryParams = [name, brand_id, description];
 
-  // The file property will only return truthy if a file was uploaded
+  //this checks if there is an image in the request  
   if (req.file) {
     updateGuitarSQL += `, image_name = ?`;
     queryParams.push(req.file.filename);
   }
 
-  // Finish the SQL query by adding the WHERE clause to only update the guitar with the matching ID
+  // this checks if there is a brand in the request
   updateGuitarSQL += ` WHERE id = ? AND user_id = ? LIMIT 1`;
   queryParams.push(id);
-  queryParams.push(user_id);
+  queryParams.push(user_id); // this adds the user id to the array
 
   console.log(queryParams);
 
-  // Run the query above, substituting the '?' with the name, brand ID, image (if uploaded), and ID in that order
+  // this is the same as above
   db.query(updateGuitarSQL, queryParams, (err, results) => {
 
     if (err) {
@@ -163,21 +150,21 @@ guitarsRouter.put('/:id', upload.single('image'), (req, res) => {
   });
 });
 
-// Add a new guitar to the database after uploading an image that was sent in the request
+// adds a guitar to the database
 guitarsRouter.post('/', upload.single('image'), (req, res) => {
 
-  // Get the brand ID and name from the request body 
+  // this gets the brand id, name, and description from the request body
   const { brand_id, name, description } = req.body;
 
-  const user_id = req.user.userId;
+  const user_id = req.user.userId; // this pulls the user id from the auth function
 
-  // The uploaded file's filename is stored in 'req.file.filename'
+  // this is the file's filename store in req.dile.filename
   const image = req.file.filename;
 
-  // Create the SQL query to insert the new guitar
+  // sql to add a guitar
   const addGuitarSQL = `INSERT INTO guitars (brand_id, name, description, image_name, user_id) VALUES (?, ?, ?, ?, ?)`;
 
-  // Run the query above, substituting the '?' with the brand ID, name, and image in that order
+  // Rsame as above
   db.query(addGuitarSQL, [brand_id, name, description, image, user_id], (err, results) => {
 
     // If an error occurred, log it and return a 500 status code

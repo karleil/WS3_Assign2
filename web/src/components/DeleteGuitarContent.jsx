@@ -8,7 +8,7 @@ function DeleteGuitarContent({ guitar, onClose, onGuitarDeleted }) {
     // Make sure the endpoint for guitars is correct
     fetch(`http://localhost:3000/guitars/${guitar.id}`, {
       headers: {
-        "Authorization": `Bearer ${localStorage.getItem("jwt-token")}`,
+        "Authorization": `Bearer ${localStorage.getItem("jwt-token")}`, // auth token of the user, used to authenticate the user and give them access to the database
       },
 
       method: "DELETE",

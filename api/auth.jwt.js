@@ -2,29 +2,28 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Our new custom middle ware
 const authenticateToken = (req, res, next) => {
 
-    // Pull the Authorization header out of the headers
+    // this pulls the token from the request header
     const authHeader = req.headers["authorization"];
 
-    // Get the token from it
+    // this splits the header into two parts, the Bearer and the token
     const token = authHeader && authHeader.split(" ")[1];
 
-    // Send an error if no token
+    // this sends an error if the token is not present in the header
     if(!token) {
-        return res.status(401).json({ message: "Access Denied" })
+        return res.status(401).json({ message: "Access not granted" })
     }
 
-    // Verify the token using the secret
+    //this verifies the token and from the secret key, it decodes the token and returns the user data
     jwt.verify(token, JWT_SECRET, (err, userData) => {
 
-        // Error, token did not validate
+        // sends an error if the token is invalid or expired
         if(err) {
             return res.status(403).json({ message: "Invalid or expired token" })
         }
 
-        // Success and move one with the attached user data
+        // if valid, sets the userData to the req object for use in other routes
         req.user = userData;
         next();
 
@@ -32,4 +31,4 @@ const authenticateToken = (req, res, next) => {
 
 }
 
-module.exports = authenticateToken;
+module.exports = authenticateToken; //export 

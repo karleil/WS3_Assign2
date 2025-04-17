@@ -15,33 +15,34 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 
 
-const ProtectedAllGuitars = authRequired(AllGuitars);
+//both pages redirects you to homepage if there is no user logged in
+const ProtectedAllGuitars = authRequired(AllGuitars); 
 const ProtectedDetail = authRequired(Detail);
 
 
 function App() {
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); //this is the state to track if user is authenticated
 
-  const handleLogout = () => {
+  const handleLogout = () => { // this function handles the logout process
     localStorage.removeItem("jwt-token");
     setIsAuthenticated(false);
-    navigate("/signin"); // Redirect to the sign-in page after logout
+    navigate("/signin"); // redirects user to the sign-in page after logout
   }
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    navigate('/guitars'); // Redirect to the guitars page after login
+    navigate('/guitars'); // redirects user to the guitars page after login
   }
 
 
   useEffect(() => {
-    const jwtToken = localStorage.getItem("jwt-token");
+    const jwtToken = localStorage.getItem("jwt-token"); // this gets the JWT token from local storage
 
     if(jwtToken) {
-      setIsAuthenticated(true);
+      setIsAuthenticated(true); // this sets the isAuthenticated state to true if the JWT token is present
     }
   }, []);
 

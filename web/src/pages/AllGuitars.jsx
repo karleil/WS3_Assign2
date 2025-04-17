@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router'; // ✅ Corrected import
+import { Link } from 'react-router'; 
 import GuitarFilters from '../components/GuitarFilters';
 import AddGuitar from '../components/AddGuitar';
 import UpdateGuitar from '../components/UpdateGuitar';
@@ -8,18 +8,18 @@ import g from '../global.module.css';
 import at from './AllGuitars.module.css';
 
 function AllGuitars() {
-    const [guitars, setGuitars] = useState([]); // Stores the list of guitars fetched from the server
+    const [guitars, setGuitars] = useState([]); 
 
     const fetchGuitars = async () => {
         try {
             const response = await fetch('http://localhost:3000/guitars', {
                 headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("jwt-token")}` // Sends the JWT token
+                    "Authorization": `Bearer ${localStorage.getItem("jwt-token")}` // auth token of the user, used to authenticate the user and give them access to the database
                 }
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch guitars');
+                throw new Error('Failed to fetch guitars'); // this handles error
             }
 
             const data = await response.json();
@@ -60,13 +60,13 @@ function AllGuitars() {
                                         />
                                         <div className={g['card-content']}>
                                             <h4 className={at['guitar-title']}>{guitar.name}</h4>
-                                            <p>{guitar.description || 'No description available'}</p> {/* ✅ Fallback if no description */}
+                                            <p>{guitar.description || 'No description available'}</p> 
                                             <div className={at['guitar-actions']}>
                                                 <Link to={`/guitars/${guitar.id}`} className={`${g['button']} ${g['small']}`}>
                                                     View
                                                 </Link>
-                                                <UpdateGuitar onGuitarUpdated={fetchGuitars} guitar={guitar} /> {/* ✅ Renamed prop */}
-                                                <DeleteGuitar onGuitarDeleted={fetchGuitars} guitar={guitar} /> {/* ✅ Renamed prop */}
+                                                <UpdateGuitar onGuitarUpdated={fetchGuitars} guitar={guitar} /> 
+                                                <DeleteGuitar onGuitarDeleted={fetchGuitars} guitar={guitar} /> 
                                             </div>
                                         </div>
                                     </div>
